@@ -1,0 +1,17 @@
+{
+  "name": "Order Notification Manager",
+  "version": "1.0.6",
+  "description": "A plugin to manage order notifications in POS.",
+  "authors": [
+    {
+      "name": "Hendrik Nõgene",
+      "email": "hendrik.nogene@erply.com"
+    }
+  ],
+  "tags": ["order", "manager", "notification"],
+  "entryPoint": "order-notification-manager.js",
+  "type": "POS",
+  "files": [
+    "order-notification-manager.js"
+  ]
+}

@@ -1,0 +1,6 @@
+export const UNPROCESSED_ORDERS_LIST = 'onm-unprocessed-orders-list'
+export const VIEW_UNPROCESSED_ORDER = 'onm-view-unprocessed-order'
+export const PICKING_CONFIRMATION = 'onm-picking-confirmation'
+export const EDIT_UNPROCESSED_ORDER = 'onm-edit-unprocessed-order'
+export const VIEW_FINISHED_ORDER = 'onm-view-finished-order'
+export const FINISHED_ORDERS_LIST = 'onm-finished-orders-list'

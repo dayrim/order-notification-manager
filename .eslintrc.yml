@@ -1,0 +1,18 @@
+extends: standard
+env:
+  browser: true
+  es6: true
+globals:
+  Template: readonly
+  $: readonly
+  TSPOS: readonly
+  ErplyAPI: readonly
+  Ember: readonly
+  HTTP_Result: readonly
+  html: readonly
+  ERPLY: readonly
+  _: readonly
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module
+rules: {}

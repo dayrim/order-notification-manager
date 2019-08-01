@@ -1,0 +1,66 @@
+stages:
+  - build
+  - deploy
+
+build_staging:
+  image: node:8-alpine
+  stage: build
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR
+  script:
+    - npm install
+    - npm run build-staging
+  only:
+    - master
+
+build_production:
+  image: node:8-alpine
+  stage: build
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR
+  script:
+    - npm install
+    - npm run build-production
+  only:
+    - tags
+
+deploy_staging:
+  image: registry2.nimi24.com/docker-base/rsync:latest
+  stage: deploy
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - echo "$STAGING_PRIVATE_KEY" > STAGING_PRIVATE_KEY
+    - chmod 600 STAGING_PRIVATE_KEY
+    - ssh-add STAGING_PRIVATE_KEY
+    - rm STAGING_PRIVATE_KEY
+  script:
+    - rsync -rv -e 'ssh -p 22' $CI_PROJECT_DIR/dist/order-notification-manager.js $STAGING_DEPLOY_USER@$STAGING_SERVER:$STAGING_APP_ROOT/order-notification-manager-$CI_JOB_ID.js
+    - ssh -p22 $STAGING_DEPLOY_USER@$STAGING_SERVER "cd $STAGING_WEB_ROOT && rm -f order-notification-manager.js"
+    - ssh -p22 $STAGING_DEPLOY_USER@$STAGING_SERVER "cd $STAGING_WEB_ROOT && ln -s $STAGING_APP_ROOT/order-notification-manager-$CI_JOB_ID.js order-notification-manager.js"
+  environment: staging
+  only:
+    - master
+
+deploy_production:
+  image: registry2.nimi24.com/docker-base/rsync:latest
+  stage: deploy
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - echo "$PRODUCTION_PRIVATE_KEY" > PRODUCTION_PRIVATE_KEY
+    - chmod 600 PRODUCTION_PRIVATE_KEY
+    - ssh-add PRODUCTION_PRIVATE_KEY
+    - rm PRODUCTION_PRIVATE_KEY
+  script:
+    - rsync -rv -e 'ssh -p 22' $CI_PROJECT_DIR/dist/order-notification-manager.js $PRODUCTION_DEPLOY_USER@$PRODUCTION_SERVER:$PRODUCTION_APP_ROOT/order-notification-manager-$CI_COMMIT_TAG.js
+    - ssh -p22 $PRODUCTION_DEPLOY_USER@$PRODUCTION_SERVER "cd $PRODUCTION_WEB_ROOT && rm -f order-notification-manager.js"
+    - ssh -p22 $PRODUCTION_DEPLOY_USER@$PRODUCTION_SERVER "cd $PRODUCTION_WEB_ROOT && ln -s $PRODUCTION_APP_ROOT/order-notification-manager-$CI_COMMIT_TAG.js order-notification-manager.js"
+  environment: production
+  when: manual
+  only:
+    - tags
