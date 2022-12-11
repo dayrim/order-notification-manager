@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "big.js": "^5.2.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "redux": "^4.0.1",
     "stupid-table-plugin": "^1.1.3"
   }
